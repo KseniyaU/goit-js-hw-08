@@ -7,9 +7,10 @@ let time;
 
 player.on('timeupdate', throttle(
     (event) => {
-        localStorage.setItem("videoplayer-current-time", event)
-        // console.log(event);
-      }, 1000
+        time = localStorage.setItem( JSON(event.seconds))
+        console.log(time);
+        // console.log(event.seconds);// виводе час через 1 сек під час перегляду відео
+      }, 1100
   ));
-time = localStorage.getItem("videoplayer-current-time");
+// time = localStorage.getItem("videoplayer-current-time");
    console.log("time -" `${time}`);
