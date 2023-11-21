@@ -1,39 +1,47 @@
 import throttle from 'lodash.throttle';
 
-const email = document.querySelector("input");
-const textarea = document.querySelector("textarea");
-const form = document.querySelector(".feedback-form")
+const form = document.querySelector('.feedback-form');
+const emailInput = form.querySelector('input[name="email"]');
+const messageInput = form.querySelector('textarea[name="message"]');
 
-let inform = {
-    email: "",
-    message: "",
-};
 const KEY = "feedback-form-state";
-
-
-
-form.addEventListener('input', throttle (
-    (event) => {
-        inform[event.target.name] = event.target.value;
-        localStorage.setItem(KEY, JSON.stringify({... inform, email: email.value, message: textarea.value}))
+// Функція для збереження в памʼять тексту введеного в форму
+const saveToLocalStorage = throttle(
+    () => {
+        const formData = {
+            email: emailInput.value,
+            messege: messageInput.value,
+        };
+        localStorage.setItem(KEY, JSON.stringify(formData))
     },500
 )
-)
-// textarea.addEventListener('input',
-//     (event) => {
-//         inform.message = event.currentTarget.value
-//     }
-// )
+//виклик попередньої функції при вводі тексту в поля форми
+form.addEventListener('input', () => {
+    saveToLocalStorage();
+});
 
-console.log(inform);
-// email.addEventListener('input', throttle(
-//     (event) => {
-//         console.log(event.currentTarget.value);
-//         if (event.currentTarget.value !== " ") {
+window.addEventListener('load', () => {
+    const storedData = localStorage.getItem(KEY); // завантаження данних при завантаженні сторінки з локального сховища
+    //перевірка чи існують дані
+    if (storedData) {
+        const parsedData = JSON.parse(storedData);
+        //заповнення значенням з розпакованих полів
+        emailInput.value = parsedData.email;
+        messageInput.value = parsedData.messege;
+    }
+})
 
-//             localStorage.setItem("feedback-form-state", event.currentTarget.value)
-//         }
-//     }, 500
-// ))
-// let textEmail;
+//очищення форми після відправки
+form.addEventListener('submit', event => {
+    event.preventDefault();//скасування стандартної дії при відправці форми
+
+    const formData = {
+        email: emailInput.value,
+        messege: messageInput.value,
+    };
+    console.log(formData);
+    form.reset();//скидання значень всіх елементів форми
+    localStorage.removeItem(KEY);// очищення локального сховища
+});
+
 
